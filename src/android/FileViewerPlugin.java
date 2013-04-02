@@ -55,13 +55,21 @@ public class FileViewerPlugin extends Plugin {
         if (args.length() != 1) {
           return new PluginResult(PluginResult.Status.INVALID_ACTION);
         }
+        // Log.d(LOG_TAG, action);
 
         // Parse the arguments
         JSONObject obj = args.getJSONObject(0);
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         Uri uri = obj.has("url") ? Uri.parse(obj.getString("url")) : null;
-        File file = new File(uri.getPath());
-        String ext=mime.getFileExtensionFromUrl(uri.getPath());
+        // File file = new File(uri.getEncodedPath());
+        // Log.d(LOG_TAG, Uri.encode(uri.toString()));
+        // String ext=mime.getFileExtensionFromUrl(uri.toString());
+        String ext = "";
+        int x = uri.toString().lastIndexOf('.');
+        if (x > 0) {
+            ext = uri.toString().substring(x+1);
+        }
+        // Log.d(LOG_TAG, ext);
         String type = obj.has("type") ? obj.getString("type") : mime.getMimeTypeFromExtension(ext);
         
         JSONObject extras = obj.has("extras") ? obj.getJSONObject("extras") : null;
@@ -126,15 +134,4 @@ public class FileViewerPlugin extends Plugin {
     }
     ((DroidGap)this.cordova.getActivity()).startActivity(i);
   }
-
-  // void sendBroadcast(String action, Map<String, String> extras) {
-  //  Intent intent = new Intent();
-  //  intent.setAction(action);
-  //  for (String key : extras.keySet()) {
-  //    String value = extras.get(key);
-  //    intent.putExtra(key, value);
-  //  }
-
-  //  ((DroidGap)this.cordova.getActivity()).sendBroadcast(intent);
-  // }
 }
