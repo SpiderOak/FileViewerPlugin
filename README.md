@@ -7,3 +7,4 @@ This has been modified to only contain the parts needed and some methods were re
 
 It was created for the SpiderOak Mobile Client project - https://github.com/SpiderOak/SpiderOakMobileClient
 
+Follows the [Cordova Plugin spec](https://github.com/alunny/cordova-plugin-spec), so that it works with the [Cordova CLI tools](https://github.com/apache/cordova-cli/).
