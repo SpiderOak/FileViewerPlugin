@@ -55,7 +55,7 @@ public class FileViewerPlugin extends Plugin {
         if (args.length() != 1) {
           return new PluginResult(PluginResult.Status.INVALID_ACTION);
         }
-        // Log.d(LOG_TAG, action);
+        Log.d(LOG_TAG, action);
 
         // Parse the arguments
         JSONObject obj = args.getJSONObject(0);
@@ -86,6 +86,28 @@ public class FileViewerPlugin extends Plugin {
         }
 
         view(obj.getString("action"), uri, type, extrasMap);
+        return new PluginResult(PluginResult.Status.OK);
+      }
+      if (action.equals("share")) {
+        if (args.length() != 1) {
+          return new PluginResult(PluginResult.Status.INVALID_ACTION);
+        }
+        // Parse the arguments
+        JSONObject obj = args.getJSONObject(0);
+        String type = obj.has("type") ? obj.getString("type") : "*/*";
+        JSONObject extras = obj.has("extras") ? obj.getJSONObject("extras") : null;
+        Map<String, String> extrasMap = new HashMap<String, String>();
+
+        // Populate the extras if any exist
+        if (extras != null) {
+          JSONArray extraNames = extras.names();
+          for (int i = 0; i < extraNames.length(); i++) {
+            String key = extraNames.getString(i);
+            String value = extras.getString(key);
+            extrasMap.put(key, value);
+          }
+        }
+        share(obj.getString("action"), type, extrasMap);
         return new PluginResult(PluginResult.Status.OK);
       }
       return new PluginResult(PluginResult.Status.INVALID_ACTION);
@@ -122,6 +144,33 @@ public class FileViewerPlugin extends Plugin {
       if (key.equals(Intent.EXTRA_TEXT) && type.equals("text/html")) {
         i.putExtra(key, Html.fromHtml(value));
       } else if (key.equals(Intent.EXTRA_STREAM)) {
+        // allowes sharing of images as attachments.
+        // value in this case should be a URI of a file
+        i.putExtra(key, Uri.parse(value));
+      } else if (key.equals(Intent.EXTRA_EMAIL)) {
+        // allows to add the email address of the receiver
+        i.putExtra(Intent.EXTRA_EMAIL, new String[] { value });
+      } else {
+        i.putExtra(key, value);
+      }
+    }
+    ((DroidGap)this.cordova.getActivity()).startActivity(i);
+  }
+
+  void share(String action, String type, Map<String, String> extras) {
+    Log.d(LOG_TAG, "IN SHARE");
+
+    Intent i = new Intent(action);
+    
+    i.setType(type);
+    
+    for (String key : extras.keySet()) {
+      String value = extras.get(key);
+      // If type is text html, the extra text must sent as HTML
+      if (key.equals(Intent.EXTRA_TEXT) && type.equals("text/html")) {
+        i.putExtra(key, Html.fromHtml(value));
+      } else if (key.equals(Intent.EXTRA_STREAM)) {
+        Log.d(LOG_TAG, "IN EXTRA_STREAM");
         // allowes sharing of images as attachments.
         // value in this case should be a URI of a file
         i.putExtra(key, Uri.parse(value));

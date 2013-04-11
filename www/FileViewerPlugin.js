@@ -12,11 +12,19 @@ cordova.define("cordova/plugin/fileviewerplugin", function(require, exports, mod
   FileViewerPlugin.prototype.EXTRA_EMAIL = "android.intent.extra.EMAIL";
 
   FileViewerPlugin.prototype.view = function(params, success, fail) {
-  return exec(function(args) {
+    return exec(function(args) {
       success(args);
       }, function(args) {
           fail(args);
       }, 'FileViewerPlugin', 'view', [params]);
+  };
+
+  FileViewerPlugin.prototype.share = function(params, success, fail) {
+    return exec(function(args) {
+      success(args);
+      }, function(args) {
+          fail(args);
+      }, 'FileViewerPlugin', 'share', [params]);
   };
 
   var fileviewerplugin = new FileViewerPlugin();
@@ -31,7 +39,7 @@ cordova.define("cordova/plugin/fileviewerplugin", function(require, exports, mod
   var fail = function() { alert('fail!'); }
 
   var params = {
-    action: WebIntent.ACTION_VIEW,
+    action: fileViewer.ACTION_VIEW,
     url: encodeURI(entry.fullPath)
   };
 
