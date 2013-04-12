@@ -55,7 +55,6 @@ public class FileViewerPlugin extends Plugin {
         if (args.length() != 1) {
           return new PluginResult(PluginResult.Status.INVALID_ACTION);
         }
-        Log.d(LOG_TAG, action);
 
         // Parse the arguments
         JSONObject obj = args.getJSONObject(0);
@@ -141,8 +140,12 @@ public class FileViewerPlugin extends Plugin {
     for (String key : extras.keySet()) {
       String value = extras.get(key);
       // If type is text html, the extra text must sent as HTML
-      if (key.equals(Intent.EXTRA_TEXT) && type.equals("text/html")) {
-        i.putExtra(key, Html.fromHtml(value));
+      if (key.equals(Intent.EXTRA_TEXT)) {
+        if (type.equals("text/html")) {
+          i.putExtra(key, Html.fromHtml(value));
+        } else {
+          i.putExtra(key, value);
+        }
       } else if (key.equals(Intent.EXTRA_STREAM)) {
         // allowes sharing of images as attachments.
         // value in this case should be a URI of a file
@@ -158,22 +161,35 @@ public class FileViewerPlugin extends Plugin {
   }
 
   void share(String action, String type, Map<String, String> extras) {
-    Log.d(LOG_TAG, "IN SHARE");
 
     Intent i = new Intent(action);
+    MimeTypeMap mime = MimeTypeMap.getSingleton();
     
     i.setType(type);
     
     for (String key : extras.keySet()) {
       String value = extras.get(key);
       // If type is text html, the extra text must sent as HTML
-      if (key.equals(Intent.EXTRA_TEXT) && type.equals("text/html")) {
-        i.putExtra(key, Html.fromHtml(value));
+      if (key.equals(Intent.EXTRA_TEXT)) {
+        if (type.equals("text/html")) {
+          i.putExtra(key, Html.fromHtml(value));
+        } else {
+          i.putExtra(key, value);
+        }
       } else if (key.equals(Intent.EXTRA_STREAM)) {
-        Log.d(LOG_TAG, "IN EXTRA_STREAM");
         // allowes sharing of images as attachments.
         // value in this case should be a URI of a file
-        i.putExtra(key, Uri.parse(value));
+        Uri uri = Uri.parse(value);
+        i.putExtra(key, uri);
+
+        String ext = "";
+        int x = uri.toString().lastIndexOf('.');
+        if (x > 0) {
+            ext = uri.toString().substring(x+1);
+        }
+        // Log.d(LOG_TAG, ext);
+        String calculatedType = mime.getMimeTypeFromExtension(ext);
+        i.setType(calculatedType);
       } else if (key.equals(Intent.EXTRA_EMAIL)) {
         // allows to add the email address of the receiver
         i.putExtra(Intent.EXTRA_EMAIL, new String[] { value });
