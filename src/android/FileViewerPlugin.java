@@ -16,8 +16,8 @@ import android.util.Log;
 import android.text.Html;
 import android.webkit.MimeTypeMap;
 
-import org.apache.cordova.api.Plugin;
-import org.apache.cordova.api.PluginResult;
+import org.apache.cordova.api.CallbackContext;
+import org.apache.cordova.api.CordovaPlugin;
 
 /**
  * This plugin is basically a minimal version of Boris Smus's WebIntents plugin,
@@ -31,7 +31,7 @@ import org.apache.cordova.api.PluginResult;
  * @author boris@borismus.com
  * 
  */
-public class FileViewerPlugin extends Plugin {
+public class FileViewerPlugin extends CordovaPlugin {
 
   private static final String LOG_TAG = "FileViewerPlugin";
 
@@ -48,12 +48,13 @@ public class FileViewerPlugin extends Plugin {
    *            The callback id used when calling back into JavaScript.
    * @return A PluginResult object with a status and message.
    */
-  public PluginResult execute(String action, JSONArray args,
-                                            String callbackId) {
+  public boolean
+      execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
     try {
       if (action.equals("view")) {
         if (args.length() != 1) {
-          return new PluginResult(PluginResult.Status.INVALID_ACTION);
+          callbackContext.error("Expected one non-empty string argument.");
+          return false;
         }
 
         // Parse the arguments
@@ -84,12 +85,14 @@ public class FileViewerPlugin extends Plugin {
           }
         }
 
-        view(obj.getString("action"), uri, type, extrasMap);
-        return new PluginResult(PluginResult.Status.OK);
+        view(obj.getString("action"), uri, type, extrasMap, callbackContext);
+        callbackContext.success();
+        return true;
       }
       if (action.equals("share")) {
         if (args.length() != 1) {
-          return new PluginResult(PluginResult.Status.INVALID_ACTION);
+          callbackContext.error("Expected one non-empty string argument.");
+          return false;
         }
         // Parse the arguments
         JSONObject obj = args.getJSONObject(0);
@@ -106,97 +109,101 @@ public class FileViewerPlugin extends Plugin {
             extrasMap.put(key, value);
           }
         }
-        share(obj.getString("action"), type, extrasMap);
-        return new PluginResult(PluginResult.Status.OK);
+        share(obj.getString("action"), type, extrasMap, callbackContext);
+        return true;
       }
-      return new PluginResult(PluginResult.Status.INVALID_ACTION);
+      callbackContext.success();
+      return true;
     } catch (JSONException e) {
       e.printStackTrace();
-      return new PluginResult(PluginResult.Status.JSON_EXCEPTION);
-    }
-  }
-
-  @Override
-  public void onNewIntent(Intent intent) {
-    if (this.onNewIntentCallback != null) {
-      PluginResult result = new PluginResult(PluginResult.Status.OK, intent.getDataString());
-      result.setKeepCallback(true);
-      this.success(result, this.onNewIntentCallback);
+      callbackContext.error("Error.");
+      return false;
     }
   }
 
   void view(String action, Uri uri, String type, 
-                                      Map<String, String> extras) {
-    Intent i = (uri != null ? new Intent(action, uri) : new Intent(action));
-    
-    if (type != null && uri != null) {
-      i.setDataAndType(uri, type); //Fix the crash problem with android 2.3.6
-    } else {
-      if (type != null) {
-        i.setType(type);
+                                      Map<String, String> extras, 
+                                      CallbackContext callbackContext) {
+    try {
+      Intent i = (uri != null ? new Intent(action, uri) : new Intent(action));
+      
+      if (type != null && uri != null) {
+        i.setDataAndType(uri, type); //Fix the crash problem with android 2.3.6
+      } else {
+        if (type != null) {
+          i.setType(type);
+        }
       }
-    }
-    
-    for (String key : extras.keySet()) {
-      String value = extras.get(key);
-      // If type is text html, the extra text must sent as HTML
-      if (key.equals(Intent.EXTRA_TEXT)) {
-        if (type.equals("text/html")) {
-          i.putExtra(key, Html.fromHtml(value));
+      
+      for (String key : extras.keySet()) {
+        String value = extras.get(key);
+        // If type is text html, the extra text must sent as HTML
+        if (key.equals(Intent.EXTRA_TEXT)) {
+          if (type.equals("text/html")) {
+            i.putExtra(key, Html.fromHtml(value));
+          } else {
+            i.putExtra(key, value);
+          }
+        } else if (key.equals(Intent.EXTRA_STREAM)) {
+          // allowes sharing of images as attachments.
+          // value in this case should be a URI of a file
+          i.putExtra(key, Uri.parse(value));
+        } else if (key.equals(Intent.EXTRA_EMAIL)) {
+          // allows to add the email address of the receiver
+          i.putExtra(Intent.EXTRA_EMAIL, new String[] { value });
         } else {
           i.putExtra(key, value);
         }
-      } else if (key.equals(Intent.EXTRA_STREAM)) {
-        // allowes sharing of images as attachments.
-        // value in this case should be a URI of a file
-        i.putExtra(key, Uri.parse(value));
-      } else if (key.equals(Intent.EXTRA_EMAIL)) {
-        // allows to add the email address of the receiver
-        i.putExtra(Intent.EXTRA_EMAIL, new String[] { value });
-      } else {
-        i.putExtra(key, value);
       }
+      ((DroidGap)this.cordova.getActivity()).startActivity(i);
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      callbackContext.error("Error. No Activity found to handle Intent.");
     }
-    ((DroidGap)this.cordova.getActivity()).startActivity(i);
   }
 
-  void share(String action, String type, Map<String, String> extras) {
+  void share(String action, String type, Map<String, String> extras, 
+                                          CallbackContext callbackContext) {
+    try {
+      Intent i = new Intent(action);
+      MimeTypeMap mime = MimeTypeMap.getSingleton();
+      
+      i.setType(type);
+      
+      for (String key : extras.keySet()) {
+        String value = extras.get(key);
+        // If type is text html, the extra text must sent as HTML
+        if (key.equals(Intent.EXTRA_TEXT)) {
+          if (type.equals("text/html")) {
+            i.putExtra(key, Html.fromHtml(value));
+          } else {
+            i.putExtra(key, value);
+          }
+        } else if (key.equals(Intent.EXTRA_STREAM)) {
+          // allowes sharing of images as attachments.
+          // value in this case should be a URI of a file
+          Uri uri = Uri.parse(value);
+          i.putExtra(key, uri);
 
-    Intent i = new Intent(action);
-    MimeTypeMap mime = MimeTypeMap.getSingleton();
-    
-    i.setType(type);
-    
-    for (String key : extras.keySet()) {
-      String value = extras.get(key);
-      // If type is text html, the extra text must sent as HTML
-      if (key.equals(Intent.EXTRA_TEXT)) {
-        if (type.equals("text/html")) {
-          i.putExtra(key, Html.fromHtml(value));
+          String ext = "";
+          int x = uri.toString().lastIndexOf('.');
+          if (x > 0) {
+              ext = uri.toString().substring(x+1);
+          }
+          // Log.d(LOG_TAG, ext);
+          String calculatedType = mime.getMimeTypeFromExtension(ext);
+          i.setType(calculatedType);
+        } else if (key.equals(Intent.EXTRA_EMAIL)) {
+          // allows to add the email address of the receiver
+          i.putExtra(Intent.EXTRA_EMAIL, new String[] { value });
         } else {
           i.putExtra(key, value);
         }
-      } else if (key.equals(Intent.EXTRA_STREAM)) {
-        // allowes sharing of images as attachments.
-        // value in this case should be a URI of a file
-        Uri uri = Uri.parse(value);
-        i.putExtra(key, uri);
-
-        String ext = "";
-        int x = uri.toString().lastIndexOf('.');
-        if (x > 0) {
-            ext = uri.toString().substring(x+1);
-        }
-        // Log.d(LOG_TAG, ext);
-        String calculatedType = mime.getMimeTypeFromExtension(ext);
-        i.setType(calculatedType);
-      } else if (key.equals(Intent.EXTRA_EMAIL)) {
-        // allows to add the email address of the receiver
-        i.putExtra(Intent.EXTRA_EMAIL, new String[] { value });
-      } else {
-        i.putExtra(key, value);
       }
+      ((DroidGap)this.cordova.getActivity()).startActivity(i);
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      callbackContext.error("Error. No Activity found to handle Intent.");
     }
-    ((DroidGap)this.cordova.getActivity()).startActivity(i);
   }
 }
