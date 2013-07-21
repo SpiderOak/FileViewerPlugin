@@ -16,8 +16,10 @@ import android.util.Log;
 import android.text.Html;
 import android.webkit.MimeTypeMap;
 
-import org.apache.cordova.api.CallbackContext;
-import org.apache.cordova.api.CordovaPlugin;
+import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaInterface;
+import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.PluginResult;
 
 /**
  * This plugin is basically a minimal version of Boris Smus's WebIntents plugin,

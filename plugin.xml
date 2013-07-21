@@ -12,9 +12,10 @@
     <platform name="android">
 
         <!-- Cordova 2.x.x -->
-        <config-file target="res/xml/config.xml" parent="/widget/plugins">
-            <plugin name="FileViewerPlugin"
-                value="com.spideroak.fileviewerplugin.FileViewerPlugin"/>
+        <config-file target="res/xml/config.xml" parent="/widget">
+            <feature name="FileViewerPlugin">
+                <param name="android-package" value="com.spideroak.fileviewerplugin.FileViewerPlugin" />
+            </feature>
         </config-file>
 
         <source-file src="src/android/FileViewerPlugin.java"
