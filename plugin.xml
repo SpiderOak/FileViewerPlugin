@@ -5,13 +5,17 @@
     version="0.1.0">
 
     <name>File Viewer Plugin</name>
+    <description>A file viewing and sharing plugin based on the Web Intents plugin by Boris Smus</description>
+    <author>Tommy-Carlos Williams - tommy@devgeeks.org</author>
+    <keywords>file,share,intents</keywords>
+    <license>MIT</license>
 
     <asset src="www/FileViewerPlugin.js" target="FileViewerPlugin.js" />
 
     <!-- android -->
     <platform name="android">
 
-        <!-- Cordova 2.x.x -->
+        <!-- Cordova 3.x.x -->
         <config-file target="res/xml/config.xml" parent="/widget">
             <feature name="FileViewerPlugin">
                 <param name="android-package" value="com.spideroak.fileviewerplugin.FileViewerPlugin" />
@@ -21,4 +25,6 @@
         <source-file src="src/android/FileViewerPlugin.java"
                 target-dir="src/com/spideroak/fileviewerplugin" />
     </platform>
+
+    <uses-permission android:name="android.permission.INTERNET" />
 </plugin>
