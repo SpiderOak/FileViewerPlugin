@@ -26,5 +26,23 @@
                 target-dir="src/com/spideroak/fileviewerplugin" />
     </platform>
 
+    <!-- ios -->
+    <platform name="ios">
+
+        <config-file parent="/*" target="config.xml">
+            <feature name="FileViewerPlugin">
+                <param name="ios-package" value="FileViewerPlugin" />
+            </feature>
+        </config-file>
+
+        <header-file src="src/ios/FileViewerPlugin.h" />
+        <source-file src="src/ios/FileViewerPlugin.m" />
+        <source-file src="src/ios/FileViewerPluginViewController.h" />
+        <source-file src="src/ios/FileViewerPluginViewController.m" />
+
+        <framework src="MobileCoreServices.framework" />
+
+    </platform>
+
     <uses-permission android:name="android.permission.INTERNET" />
 </plugin>

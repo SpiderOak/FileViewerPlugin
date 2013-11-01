@@ -13,7 +13,7 @@ cordova.define("cordova/plugin/fileviewerplugin", function(require, exports, mod
 
   FileViewerPlugin.prototype.view = function(params, success, fail) {
     return exec(function(args) {
-      success(args);
+        success(args);
       }, function(args) {
           fail(args);
       }, 'FileViewerPlugin', 'view', [params]);
@@ -21,7 +21,7 @@ cordova.define("cordova/plugin/fileviewerplugin", function(require, exports, mod
 
   FileViewerPlugin.prototype.share = function(params, success, fail) {
     return exec(function(args) {
-      success(args);
+        success(args);
       }, function(args) {
           fail(args);
       }, 'FileViewerPlugin', 'share', [params]);
