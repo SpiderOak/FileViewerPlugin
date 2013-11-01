@@ -1,5 +1,4 @@
 #import "FileViewerPluginViewController.h"
-#import "FileViewerPlugin.h"
 #import <MobileCoreServices/MobileCoreServices.h> // For UTI
 
 #define SCREEN_WIDTH ((([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait) || ([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortraitUpsideDown)) ? [[UIScreen mainScreen] bounds].size.width : [[UIScreen mainScreen] bounds].size.height)
