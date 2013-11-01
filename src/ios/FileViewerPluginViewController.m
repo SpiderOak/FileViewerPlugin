@@ -6,7 +6,7 @@
 
 @implementation FileViewerPluginViewController
 
-@synthesize documentInteractionController;
+@synthesize documentInteractionController, myViewController;
 
 #pragma mark -
 #pragma mark View / Share methods
@@ -17,10 +17,19 @@
     return (NSString *)CFBridgingRelease(UTI) ;
 }
 
+- (BOOL) validateFileUrl: (NSString *) candidate {
+    NSString* lowerCased = [candidate lowercaseString];
+    return [lowerCased hasPrefix:@"file://"];
+}
+
 - (BOOL)viewFile:(NSString *)filePath usingViewController: (UIViewController *) viewController
 {
-    //  NSURL *URL = [[NSBundle mainBundle] URLForResource:@"BeachWars.jpg" withExtension:nil];
+    // @TODO: REFACTOR THIS IN TO FileViewerPlugin.m
+    self.myViewController = viewController;
     NSURL* URL = [NSURL URLWithString:filePath];
+    if (![self validateFileUrl:filePath]) {
+        URL = [[NSURL alloc] initFileURLWithPath:filePath];
+    }
     BOOL filePreviewSuccess = NO; // Success is true if it was possible to open the controller and there are apps available
     
     if (URL) {
@@ -29,8 +38,8 @@
         self.documentInteractionController.UTI = [self UTIForURL:URL];
         self.documentInteractionController.delegate = self;
         
-        UIView *filePreviewView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
-        [[viewController view] addSubview:filePreviewView];
+        UIView *filePreviewView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, 1)];
+        [[self.myViewController view] addSubview:filePreviewView];
         self.view = filePreviewView;
         
         // Configure Document Interaction Controller
@@ -65,7 +74,7 @@
 #pragma mark -
 #pragma mark Document Interaction Controller Delegate Methods
 - (UIViewController *) documentInteractionControllerViewControllerForPreview: (UIDocumentInteractionController *) controller {
-  return self;
+    return self.myViewController;
 }
 
 @end
