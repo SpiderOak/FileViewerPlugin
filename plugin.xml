@@ -10,7 +10,9 @@
     <keywords>file,share,intents</keywords>
     <license>MIT</license>
 
-    <asset src="www/FileViewerPlugin.js" target="FileViewerPlugin.js" />
+    <js-module name="FileViewerPlugin" src="www/FileViewerPlugin.js">
+        <clobbers target="window.FileViewerPlugin" />
+    </js-module>
 
     <!-- android -->
     <platform name="android">
