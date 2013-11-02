@@ -1,7 +1,7 @@
 @interface FileViewerPluginViewController : UIViewController <UIDocumentInteractionControllerDelegate>
 {
-    UIDocumentInteractionController* documentInteractionController;
-    UIViewController* myViewController;
+  UIDocumentInteractionController* documentInteractionController;
+  UIViewController* myViewController;
 }
 
 @property (retain, nonatomic) UIDocumentInteractionController* documentInteractionController;
