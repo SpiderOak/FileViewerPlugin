@@ -21,7 +21,31 @@
 
 - (void)share:(CDVInvokedUrlCommand*)command
 {
-    // ...
+    NSDictionary* arguments = [command.arguments objectAtIndex:0];
+    NSString* filePath = [arguments objectForKey:@"url"];
+    NSString *shareString = @"";
+    NSURL *fileUrl = nil;
+    
+    if (!filePath) {
+        NSDictionary* extras = [arguments objectForKey:@"extras"];
+        if ([extras objectForKey:@"android.intent.extra.STREAM"]) {
+            filePath = [extras objectForKey:@"android.intent.extra.STREAM"];
+            if (filePath) {
+                fileUrl = [NSURL fileURLWithPath:filePath];
+            }
+        }
+        if ([extras objectForKey:@"android.intent.extra.TEXT"]) {
+            shareString = [extras objectForKey:@"android.intent.extra.TEXT"];
+        }
+    }
+    
+    NSArray *activityItems = [NSArray arrayWithObjects:shareString, fileUrl, nil];
+    
+    UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
+    activityViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    activityViewController.excludedActivityTypes = @[UIActivityTypePrint, UIActivityTypeCopyToPasteboard, UIActivityTypeAssignToContact, UIActivityTypeSaveToCameraRoll];
+    
+    [[super viewController] presentViewController:activityViewController animated:YES completion:nil];
 }
 
 @end
