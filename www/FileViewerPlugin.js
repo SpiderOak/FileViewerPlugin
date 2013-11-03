@@ -1,4 +1,4 @@
-cordova.define("cordova/plugin/fileviewerplugin", function(require, exports, module) {
+
   var exec = require('cordova/exec');
 
   var FileViewerPlugin = function() {};
@@ -13,7 +13,7 @@ cordova.define("cordova/plugin/fileviewerplugin", function(require, exports, mod
 
   FileViewerPlugin.prototype.view = function(params, success, fail) {
     return exec(function(args) {
-      success(args);
+        success(args);
       }, function(args) {
           fail(args);
       }, 'FileViewerPlugin', 'view', [params]);
@@ -21,7 +21,7 @@ cordova.define("cordova/plugin/fileviewerplugin", function(require, exports, mod
 
   FileViewerPlugin.prototype.share = function(params, success, fail) {
     return exec(function(args) {
-      success(args);
+        success(args);
       }, function(args) {
           fail(args);
       }, 'FileViewerPlugin', 'share', [params]);
@@ -29,19 +29,3 @@ cordova.define("cordova/plugin/fileviewerplugin", function(require, exports, mod
 
   var fileviewerplugin = new FileViewerPlugin();
   module.exports = fileviewerplugin;
-});
-
-
-/**
-  //usage:
-  var fileViewer = cordova.require("cordova/plugin/fileviewerplugin");
-  var win  = function() { alert('win!');  }
-  var fail = function() { alert('fail!'); }
-
-  var params = {
-    action: fileViewer.ACTION_VIEW,
-    url: encodeURI(entry.fullPath)
-  };
-
-   fileViewer.view(params, win, fail);
-*/

@@ -10,7 +10,9 @@
     <keywords>file,share,intents</keywords>
     <license>MIT</license>
 
-    <asset src="www/FileViewerPlugin.js" target="FileViewerPlugin.js" />
+    <js-module name="FileViewerPlugin" src="www/FileViewerPlugin.js">
+        <clobbers target="window.FileViewerPlugin" />
+    </js-module>
 
     <!-- android -->
     <platform name="android">
@@ -24,6 +26,24 @@
 
         <source-file src="src/android/FileViewerPlugin.java"
                 target-dir="src/com/spideroak/fileviewerplugin" />
+    </platform>
+
+    <!-- ios -->
+    <platform name="ios">
+
+        <config-file parent="/*" target="config.xml">
+            <feature name="FileViewerPlugin">
+                <param name="ios-package" value="FileViewerPlugin" />
+            </feature>
+        </config-file>
+
+        <header-file src="src/ios/FileViewerPlugin.h" />
+        <source-file src="src/ios/FileViewerPlugin.m" />
+        <source-file src="src/ios/FileViewerPluginViewController.h" />
+        <source-file src="src/ios/FileViewerPluginViewController.m" />
+
+        <framework src="MobileCoreServices.framework" />
+
     </platform>
 
     <uses-permission android:name="android.permission.INTERNET" />
