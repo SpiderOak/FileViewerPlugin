@@ -13,6 +13,6 @@ One downside of having been written for just Android first is that there are som
 
 Follows the [Cordova Plugin spec](https://github.com/alunny/cordova-plugin-spec), so that it works with the [Cordova CLI tools](https://github.com/apache/cordova-cli/).
 
-`cordova plugin install https://github.com/SpiderOak/FileViewerPlugin.git`
+`cordova plugin add https://github.com/SpiderOak/FileViewerPlugin.git`
 
-`phonegap local plugin install https://github.com/SpiderOak/FileViewerPlugin.git`
+`phonegap local plugin add https://github.com/SpiderOak/FileViewerPlugin.git`
