@@ -2,7 +2,7 @@
 #import <Cordova/CDV.h>
 
 @implementation FileViewerPlugin
-@synthesize previewViewController;
+@synthesize previewViewController, activityViewController;
 
 - (void)view:(CDVInvokedUrlCommand*)command
 {
@@ -22,6 +22,7 @@
 - (void)hide:(CDVInvokedUrlCommand*)command
 {
     [self.previewViewController.documentInteractionController dismissPreviewAnimated:YES];
+    [self.activityViewController dismissModalViewControllerAnimated:YES];
 }
 
 - (void)share:(CDVInvokedUrlCommand*)command
@@ -46,11 +47,11 @@
     
     NSArray *activityItems = [NSArray arrayWithObjects:shareString, fileUrl, nil];
     
-    UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
-    activityViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-    activityViewController.excludedActivityTypes = @[UIActivityTypePrint, UIActivityTypeCopyToPasteboard, UIActivityTypeAssignToContact, UIActivityTypeSaveToCameraRoll];
+    self.activityViewController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
+    self.activityViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    self.activityViewController.excludedActivityTypes = @[UIActivityTypePrint, UIActivityTypeCopyToPasteboard, UIActivityTypeAssignToContact, UIActivityTypeSaveToCameraRoll];
     
-    [[super viewController] presentViewController:activityViewController animated:YES completion:nil];
+    [[super viewController] presentViewController:self.activityViewController animated:YES completion:nil];
 }
 
 @end
