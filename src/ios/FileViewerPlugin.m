@@ -1,8 +1,8 @@
 #import "FileViewerPlugin.h"
-#import "FileViewerPluginViewController.h"
 #import <Cordova/CDV.h>
 
 @implementation FileViewerPlugin
+@synthesize previewViewController;
 
 - (void)view:(CDVInvokedUrlCommand*)command
 {
@@ -12,11 +12,16 @@
     NSDictionary* arguments = [command.arguments objectAtIndex:0];
     NSString* filePath = [arguments objectForKey:@"url"];
     
-    FileViewerPluginViewController* viewController = [[FileViewerPluginViewController alloc] init];
-    pluginSuccess = [viewController viewFile:filePath usingViewController:[super viewController]];
+    self.previewViewController = [[FileViewerPluginViewController alloc] init];
+    pluginSuccess = [self.previewViewController viewFile:filePath usingViewController:[super viewController]];
     
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:pluginSuccess];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)hide:(CDVInvokedUrlCommand*)command
+{
+    [self.previewViewController.documentInteractionController dismissPreviewAnimated:YES];
 }
 
 - (void)share:(CDVInvokedUrlCommand*)command

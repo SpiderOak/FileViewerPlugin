@@ -19,6 +19,11 @@
       }, 'FileViewerPlugin', 'view', [params]);
   };
 
+  // Only really useful on iOS
+  FileViewerPlugin.prototype.hide = function() {
+    return exec(null, null, 'FileViewerPlugin', 'hide', []);
+  };
+
   FileViewerPlugin.prototype.share = function(params, success, fail) {
     return exec(function(args) {
         success(args);
