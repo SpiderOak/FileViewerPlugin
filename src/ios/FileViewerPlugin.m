@@ -22,11 +22,14 @@
 - (void)hide:(CDVInvokedUrlCommand*)command
 {
     [self.previewViewController.documentInteractionController dismissPreviewAnimated:YES];
-    [self.activityViewController dismissModalViewControllerAnimated:YES];
+    [self.previewViewController.documentInteractionController dismissMenuAnimated:YES];
+    [self.activityViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)share:(CDVInvokedUrlCommand*)command
 {
+    BOOL pluginSuccess = NO;
+    
     NSDictionary* arguments = [command.arguments objectAtIndex:0];
     NSString* filePath = [arguments objectForKey:@"url"];
     NSString *shareString = @"";
@@ -45,13 +48,16 @@
         }
     }
     
-    NSArray *activityItems = [NSArray arrayWithObjects:shareString, fileUrl, nil];
-    
-    self.activityViewController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
-    self.activityViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-    self.activityViewController.excludedActivityTypes = @[UIActivityTypePrint, UIActivityTypeCopyToPasteboard, UIActivityTypeAssignToContact, UIActivityTypeSaveToCameraRoll];
-    
-    [[super viewController] presentViewController:self.activityViewController animated:YES completion:nil];
+    if (shareString.length != 0) {
+        NSArray *activityItems = [NSArray arrayWithObjects:shareString, fileUrl, nil];
+        
+        self.activityViewController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
+        self.activityViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+        [[super viewController] presentViewController:self.activityViewController animated:YES completion:nil];
+    } else {
+        self.previewViewController = [[FileViewerPluginViewController alloc] init];
+        pluginSuccess = [self.previewViewController openFile:fileUrl usingViewController:[super viewController]];
+    }
 }
 
 @end

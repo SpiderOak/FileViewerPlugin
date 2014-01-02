@@ -8,5 +8,6 @@
 @property (retain, nonatomic) UIViewController* myViewController;
 
 - (BOOL)viewFile:(NSString *)filePath usingViewController: (UIViewController *) viewController;
+- (BOOL)openFile:(NSURL *)URL usingViewController: (UIViewController *) viewController;
 
 @end
