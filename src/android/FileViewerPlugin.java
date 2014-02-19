@@ -2,6 +2,7 @@ package com.spideroak.fileviewerplugin;
 
 import java.util.HashMap;
 import java.util.Map;
+import android.content.Context;
 
 import java.io.File;
 
@@ -72,8 +73,14 @@ public class FileViewerPlugin extends CordovaPlugin {
             ext = uri.toString().substring(x+1);
         }
         // Log.d(LOG_TAG, ext);
-        String type = obj.has("type") ? obj.getString("type") : mime.getMimeTypeFromExtension(ext);
-        
+        String type = obj.has("type") ? obj.getString("type") : "";
+        if (type == "") {
+            Log.e(LOG_TAG, "trying getContentResolver...");
+            Context app = this.cordova.getActivity().getApplicationContext();
+            type = app.getContentResolver().getType(uri);
+            Log.e(LOG_TAG, "after getContentResolver, type == " + type);
+        }
+
         JSONObject extras = obj.has("extras") ? obj.getJSONObject("extras") : null;
         Map<String, String> extrasMap = new HashMap<String, String>();
 
@@ -86,6 +93,8 @@ public class FileViewerPlugin extends CordovaPlugin {
             extrasMap.put(key, value);
           }
         }
+
+        Log.e(LOG_TAG, "type=" + type + ", uri=" + uri);
 
         view(obj.getString("action"), uri, type, extrasMap, callbackContext);
         callbackContext.success();
