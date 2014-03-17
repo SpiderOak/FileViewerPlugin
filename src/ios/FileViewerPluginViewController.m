@@ -73,10 +73,6 @@
       self.documentInteractionController.UTI = [self UTIForURL:URL];
       self.documentInteractionController.delegate = self;
       
-      UIView *fileOpenView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, 1)];
-      [[self.myViewController view] addSubview:fileOpenView];
-      self.view = fileOpenView;
-      
       // Configure Document Interaction Controller
       [self.documentInteractionController setDelegate:self];
       
@@ -84,16 +80,21 @@
       CGRect screenRect = [[viewController view] bounds];
       CGFloat screenWidth = screenRect.size.width;
       CGFloat screenHeight = screenRect.size.height;
-      fileOpenSuccess = [self.documentInteractionController presentOptionsMenuFromRect:CGRectMake((screenWidth / 2), screenHeight, 1, 1) inView:fileOpenView animated:YES];
+      fileOpenSuccess = [self.documentInteractionController
+                         presentOptionsMenuFromRect:CGRectMake((screenWidth / 2), screenHeight, 1, 1)
+                         inView:[self.myViewController view] animated:YES];
       
       if(!fileOpenSuccess) {
         // There is no app to handle this file
         NSString *deviceType = [UIDevice currentDevice].localizedModel;
-        NSString *message = [NSString stringWithFormat:NSLocalizedString(@"Your %@ doesn't seem to have any other Apps installed that can open this document.",
-                                                                         @"Your %@ doesn't seem to have any other Apps installed that can open this document."), deviceType];
+        NSString *message = [NSString stringWithFormat:NSLocalizedString(
+                             @"Your %@ doesn't seem to have any other Apps installed that can open this document.",
+                             @"Your %@ doesn't seem to have any other Apps installed that can open this document."),
+                             deviceType];
         
         // Display alert
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"No suitable Apps installed", @"No suitable App installed")
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(
+                               @"No suitable Apps installed", @"No suitable App installed")
                                                         message:message
                                                        delegate:nil
                                               cancelButtonTitle:NSLocalizedString(@"OK", @"OK")
