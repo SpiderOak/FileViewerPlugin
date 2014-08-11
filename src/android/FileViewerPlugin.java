@@ -157,7 +157,7 @@ public class FileViewerPlugin extends CordovaPlugin {
           i.putExtra(key, value);
         }
       }
-      ((DroidGap)this.cordova.getActivity()).startActivity(i);
+      ((CordovaActivity)this.cordova.getActivity()).startActivity(i);
     } catch (Exception ex) {
       ex.printStackTrace();
       callbackContext.error("Error. No Activity found to handle Intent.");
@@ -202,7 +202,7 @@ public class FileViewerPlugin extends CordovaPlugin {
           i.putExtra(key, value);
         }
       }
-      ((DroidGap)this.cordova.getActivity()).startActivity(i);
+      ((CordovaActivity)this.cordova.getActivity()).startActivity(i);
     } catch (Exception ex) {
       ex.printStackTrace();
       callbackContext.error("Error. No Activity found to handle Intent.");
