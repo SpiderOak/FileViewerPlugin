@@ -16,6 +16,7 @@ import android.util.Log;
 import android.text.Html;
 import android.webkit.MimeTypeMap;
 
+import org.apache.cordova.CordovaActivity;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
