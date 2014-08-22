@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.util.Log;
 import android.text.Html;
 import android.webkit.MimeTypeMap;
+import java.net.HttpURLConnection;
 
 import org.apache.cordova.CordovaActivity;
 import org.apache.cordova.CallbackContext;
@@ -71,10 +72,18 @@ public class FileViewerPlugin extends CordovaPlugin {
         int x = uri.toString().lastIndexOf('.');
         if (x > 0) {
             ext = uri.toString().substring(x+1);
+            //ext = MimeTypeMap.getFileExtensionFromUrl(uri.toString());
         }
-        // Log.d(LOG_TAG, ext);
-        String type = obj.has("type") ? obj.getString("type") : mime.getMimeTypeFromExtension(ext);
-        
+        Log.d(LOG_TAG, ext);
+        String type = obj.has("type") ? obj.getString("type") : mime.getMimeTypeFromExtension(ext.toLowerCase());
+        if (type == null) {
+          type = HttpURLConnection.guessContentTypeFromName(uri.toString());
+        }
+
+        if (type == null) {
+          type = "application/" + ext;
+        }
+
         JSONObject extras = obj.has("extras") ? obj.getJSONObject("extras") : null;
         Map<String, String> extrasMap = new HashMap<String, String>();
 
@@ -161,11 +170,16 @@ public class FileViewerPlugin extends CordovaPlugin {
       ((CordovaActivity)this.cordova.getActivity()).startActivity(i);
     } catch (Exception ex) {
       ex.printStackTrace();
-      callbackContext.error("Error. No Activity found to handle Intent.");
+      if (!type.equals("*/*")) {
+        // Try the fallback if we haven't already
+        view(action, uri, "*/*", extras, callbackContext);
+      } else {
+        callbackContext.error("Error. No Activity found to handle Intent.");
+      }
     }
   }
 
-  void share(String action, String type, Map<String, String> extras, 
+  void share(String action, String type, Map<String, String> extras,
                                           CallbackContext callbackContext) {
     try {
       Intent i = new Intent(action);
@@ -194,7 +208,10 @@ public class FileViewerPlugin extends CordovaPlugin {
               ext = uri.toString().substring(x+1);
           }
           // Log.d(LOG_TAG, ext);
-          String calculatedType = mime.getMimeTypeFromExtension(ext);
+          String calculatedType = mime.getMimeTypeFromExtension(ext.toLowerCase());
+          if (calculatedType == null) {
+            calculatedType = "*/*";
+          }
           i.setType(calculatedType);
         } else if (key.equals(Intent.EXTRA_EMAIL)) {
           // allows to add the email address of the receiver
