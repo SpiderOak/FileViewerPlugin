@@ -1,6 +1,8 @@
 #import "FileViewerPlugin.h"
 #import <Cordova/CDV.h>
 
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+
 @implementation FileViewerPlugin
 @synthesize previewViewController, activityViewController;
 
@@ -34,6 +36,9 @@
     NSString* filePath = [arguments objectForKey:@"url"];
     NSString *shareString = @"";
     NSURL *fileUrl = nil;
+    CGRect screenRect = [[[super viewController] view] bounds];
+    CGFloat screenWidth = screenRect.size.width;
+    CGFloat screenHeight = screenRect.size.height;
     
     if (!filePath) {
         NSDictionary* extras = [arguments objectForKey:@"extras"];
@@ -52,6 +57,10 @@
         NSArray *activityItems = [NSArray arrayWithObjects:shareString, fileUrl, nil];
         
         self.activityViewController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
+        if(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0")){
+            self.activityViewController.popoverPresentationController.sourceView = [[super viewController] view];
+            self.activityViewController.popoverPresentationController.sourceRect = CGRectMake(screenWidth/2,screenHeight,0,0);
+        }
         self.activityViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
         [[super viewController] presentViewController:self.activityViewController animated:YES completion:nil];
     } else {
