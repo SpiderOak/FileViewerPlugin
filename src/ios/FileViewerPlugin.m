@@ -45,7 +45,7 @@
         if ([extras objectForKey:@"android.intent.extra.STREAM"]) {
             filePath = [extras objectForKey:@"android.intent.extra.STREAM"];
             if (filePath) {
-                fileUrl = [NSURL fileURLWithPath:filePath];
+              fileUrl = [NSURL URLWithString:filePath];
             }
         }
         if ([extras objectForKey:@"android.intent.extra.TEXT"]) {
