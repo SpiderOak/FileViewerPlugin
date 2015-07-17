@@ -1,0 +1,39 @@
+{
+  "name": "cordova-plugin-fileviewer",
+  "version": "0.4.0",
+  "description": "A file viewing and sharing plugin based on the Web Intents plugin by Boris Smus",
+  "cordova": {
+    "id": "com.spideroak.fileviewerplugin",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SpiderOak/FileViewerPlugin.git"
+  },
+  "keywords": [
+    "file",
+    "share",
+    "intents",
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios"
+  ],
+  "author": {
+    "name": "tommy-carlos williams",
+    "email": "tommy@devgeeks.org",
+    "url": "http://devgeeks.org"
+  },
+  "licenses": [
+    {
+      "type": "Apache2",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/SpiderOak/FileViewerPlugin/issues"
+  },
+  "homepage": "https://github.com/SpiderOak/FileViewerPlugin#readme"
+}
