@@ -5,7 +5,6 @@ import java.util.Map;
 
 import java.io.File;
 
-import org.apache.cordova.DroidGap;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
