@@ -31,6 +31,12 @@
     <!-- ios -->
     <platform name="ios">
 
+        <config-file target="*-Info.plist" parent="NSPhotoLibraryUsageDescription">
+            <string> </string>
+        </config-file>
+        <config-file target="*-Info.plist" parent="NSContactsUsageDescription">
+            <string> </string>
+        </config-file>
         <config-file parent="/*" target="config.xml">
             <feature name="FileViewerPlugin">
                 <param name="ios-package" value="FileViewerPlugin" />
